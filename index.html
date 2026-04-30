@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>COVID-19 Global Analytics — Project Guide</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@300;400;500;700&family=Inter:wght@300;400;500;600&display=swap');
+
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#f8fafc;
+  --card:#ffffff;
+  --ink:#0f172a;
+  --muted:#64748b;
+  --rule:#e2e8f0;
+  --red:#ef4444;
+  --red-d:#991b1b;
+  --green:#22c55e;
+  --blue:#3b82f6;
+  --amber:#f59e0b;
+  --purple:#8b5cf6;
+  --orange:#f97316;
+  --done:#f0fdf4;
+}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.5}
+code{font-family:'JetBrains Mono',monospace;font-size:11px;background:#f1f5f9;padding:1px 5px;border-radius:2px;color:#1e3a5f}
+
+/* HEADER */
+.hdr{background:linear-gradient(135deg,#0f172a 0%,#1e3a5f 100%);position:relative;overflow:hidden}
+.hdr::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 70% 40%,rgba(239,68,68,0.1) 0%,transparent 60%);pointer-events:none}
+.hdr::after{content:'';position:absolute;bottom:0;left:0;right:0;height:4px;background:var(--red)}
+.hdr-in{max-width:1100px;margin:0 auto;padding:40px 28px 34px;display:grid;grid-template-columns:1fr auto;gap:24px;align-items:end}
+.hdr-eye{font-family:'JetBrains Mono',monospace;font-size:8px;letter-spacing:.25em;color:var(--red);text-transform:uppercase;margin-bottom:12px}
+.hdr-title{font-family:'Libre Baskerville',Georgia,serif;font-size:clamp(34px,4.5vw,60px);color:#fff;line-height:.95;font-weight:700;margin-bottom:10px}
+.hdr-sub{font-size:13px;color:#94a3b8;line-height:1.5;font-style:italic}
+.hdr-stats{text-align:right}
+.hst{font-family:'JetBrains Mono',monospace;font-size:8px;color:#334155;line-height:2.2;display:block}
+.hst strong{display:block;font-family:'Libre Baskerville',serif;font-size:26px;font-weight:700;color:var(--red);line-height:1}
+
+/* NAV */
+.topnav{background:#0f172a;display:flex;overflow-x:auto;scrollbar-width:none;border-bottom:2px solid var(--red)}
+.topnav::-webkit-scrollbar{display:none}
+.tnb{padding:12px 20px;font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#334155;cursor:pointer;background:none;border:none;white-space:nowrap;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .15s}
+.tnb:hover{color:#94a3b8}
+.tnb.on{color:#fff;border-bottom-color:var(--red)}
+
+/* PROGRESS */
+.prog{background:#0f172a;padding:8px 28px;display:flex;align-items:center;gap:14px}
+.plbl{font-family:'JetBrains Mono',monospace;font-size:8px;color:#1e3a5f;letter-spacing:.15em;text-transform:uppercase;white-space:nowrap}
+.ptr{flex:1;height:3px;background:#1e3a5f;border-radius:2px;overflow:hidden;max-width:300px}
+.pfill{height:100%;background:var(--red);width:0%;transition:width 1s}
+.ptxt{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--red);white-space:nowrap}
+
+/* SECTION */
+.section{display:none;animation:fu .25s ease}
+.section.on{display:block}
+@keyframes fu{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.sb{max-width:1100px;margin:0 auto;padding:36px 28px 80px}
+
+/* PHASE HDR */
+.phd{border-top:3px solid var(--ink);border-bottom:1px solid var(--rule);padding:18px 0 14px;margin-bottom:22px;display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+.pp{font-family:'JetBrains Mono',monospace;font-size:8px;padding:3px 10px;background:var(--red);color:#fff;letter-spacing:.1em;text-transform:uppercase;border-radius:2px;font-weight:700}
+.ptitle{font-family:'Libre Baskerville',serif;font-size:24px;font-weight:700;color:var(--ink)}
+.ptime{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);margin-left:auto}
+
+/* CALLOUT */
+.co{border-left:4px solid var(--red);background:#fff1f2;padding:16px 20px;border-radius:0 6px 6px 0;margin-bottom:16px}
+.co.gn{border-left-color:var(--green);background:#f0fdf4}
+.co.bl{border-left-color:var(--blue);background:#eff6ff}
+.co.am{border-left-color:var(--amber);background:#fffbeb}
+.co.pu{border-left-color:var(--purple);background:#f5f3ff}
+.co.or{border-left-color:var(--orange);background:#fff7ed}
+.co-h{font-family:'Libre Baskerville',serif;font-size:17px;font-weight:700;margin-bottom:7px}
+.co-b{font-size:13px;color:var(--muted);line-height:1.7}
+.co-b strong{color:var(--ink);font-weight:600}
+
+/* GRID */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:16px}
+@media(max-width:680px){.g2,.g3{grid-template-columns:1fr}}
+
+/* CARD */
+.card{background:var(--card);border:1px solid var(--rule);border-radius:4px;padding:16px}
+.cn{font-family:'Libre Baskerville',serif;font-size:28px;font-weight:700;color:var(--red);line-height:1}
+.cl{font-family:'JetBrains Mono',monospace;font-size:8px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+.ct{font-weight:600;font-size:14px;margin-bottom:5px}
+.cb{font-size:12px;color:var(--muted);line-height:1.55}
+
+/* KPI */
+.kpi{background:var(--card);border:1px solid var(--rule);border-top:3px solid var(--red);border-radius:3px;padding:15px}
+.kpi.gn{border-top-color:var(--green)}.kpi.bl{border-top-color:var(--blue)}.kpi.am{border-top-color:var(--amber)}.kpi.pu{border-top-color:var(--purple)}.kpi.or{border-top-color:var(--orange)}
+.kn{font-family:'JetBrains Mono',monospace;font-size:8px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+.kv{font-family:'Libre Baskerville',serif;font-size:26px;font-weight:700;line-height:1;margin-bottom:4px}
+.kd{font-size:11px;color:var(--muted)}
+
+/* TABLE */
+.tbl{width:100%;border-collapse:collapse;font-size:12.5px;background:var(--card);border:1px solid var(--rule);border-radius:4px;overflow:hidden;margin-bottom:16px}
+.tbl th{background:var(--ink);color:#fff;font-family:'JetBrains Mono',monospace;font-size:8px;letter-spacing:.1em;text-transform:uppercase;padding:10px 12px;text-align:left}
+.tbl td{padding:10px 12px;border-bottom:1px solid var(--rule);line-height:1.5;vertical-align:top}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tr:hover td{background:#f8fafc}
+.bge{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:8px;padding:2px 7px;border-radius:2px;text-transform:uppercase;letter-spacing:.06em}
+.bg-r{background:#fff1f2;color:#7f1d1d;border:1px solid #fecaca}
+.bg-o{background:#fff7ed;color:#7c2d12;border:1px solid #fed7aa}
+.bg-g{background:#f0fdf4;color:#14532d;border:1px solid #86efac}
+.bg-b{background:#eff6ff;color:#1e3a8a;border:1px solid #93c5fd}
+.bg-a{background:#fffbeb;color:#78350f;border:1px solid #fde68a}
+.bg-p{background:#f5f3ff;color:#4c1d95;border:1px solid #c4b5fd}
+
+/* TASK */
+.task{border:1px solid var(--rule);background:var(--card);margin-bottom:11px;border-radius:3px;overflow:hidden;transition:border-color .15s}
+.task:hover{border-color:#cbd5e1}
+.task.done{background:var(--done);border-color:#86efac}
+.th{display:flex;align-items:stretch;cursor:pointer;user-select:none}
+.tcb{width:50px;min-height:50px;display:flex;align-items:center;justify-content:center;border-right:1px solid var(--rule);background:#f8fafc;cursor:pointer;transition:background .15s;flex-shrink:0}
+.tcb:hover{background:#f1f5f9}
+.task.done .tcb{background:#dcfce7;border-right-color:#86efac}
+.cb{width:19px;height:19px;border:2px solid #bbb;border-radius:2px;display:flex;align-items:center;justify-content:center;font-size:11px;color:transparent;transition:all .15s}
+.task.done .cb{border-color:var(--green);background:var(--green);color:#fff}
+.tm{flex:1;padding:12px 14px}
+.tn{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--muted);letter-spacing:.1em;margin-bottom:3px}
+.tt{font-weight:600;font-size:14px;line-height:1.25;margin-bottom:6px}
+.task.done .tt{text-decoration:line-through;color:var(--muted)}
+.tgs{display:flex;flex-wrap:wrap;gap:5px}
+.tg{font-family:'JetBrains Mono',monospace;font-size:8px;padding:2px 7px;border-radius:2px;letter-spacing:.07em;text-transform:uppercase}
+.tg-py{background:#eff6ff;color:#1e3a8a;border:1px solid #93c5fd}
+.tg-v{background:#fffbeb;color:#78350f;border:1px solid #fde68a}
+.tg-s{background:#f5f3ff;color:#4c1d95;border:1px solid #c4b5fd}
+.tg-r{background:#fff1f2;color:#7f1d1d;border:1px solid #fecaca}
+.tg-g{background:#f0fdf4;color:#14532d;border:1px solid #86efac}
+.tr{padding:12px 14px;display:flex;flex-direction:column;align-items:flex-end;gap:5px;min-width:100px;border-left:1px solid var(--rule);flex-shrink:0}
+.ef{font-family:'JetBrains Mono',monospace;font-size:8px;padding:3px 8px;border-radius:1px;white-space:nowrap}
+.eh{background:#fff1f2;color:#7f1d1d;border:1px solid #fecaca}
+.em{background:#fffbeb;color:#78350f;border:1px solid #fde68a}
+.el{background:#f0fdf4;color:#14532d;border:1px solid #86efac}
+.pd{width:8px;height:8px;border-radius:50%}
+.pc{background:var(--red)}.ph{background:var(--amber)}.pm{background:var(--green)}
+
+/* BODY */
+.tb{display:none;border-top:1px solid var(--rule);background:#fdfdfe}
+.tb.open{display:block}
+.ti{padding:18px 20px 18px 66px;display:grid;grid-template-columns:1fr 1fr;gap:20px}
+@media(max-width:700px){.ti{grid-template-columns:1fr;padding-left:20px}}
+.tbl-l{font-family:'JetBrains Mono',monospace;font-size:8px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:7px;border-bottom:1px solid var(--rule);padding-bottom:3px}
+.steps{list-style:none;counter-reset:sc}
+.steps li{font-size:12.5px;line-height:1.6;padding:5px 0 5px 18px;border-bottom:1px dotted #e2e8f0;color:#1e293b;position:relative}
+.steps li::before{content:counter(sc);counter-increment:sc;position:absolute;left:0;top:7px;font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--red);width:14px}
+.codeblock{background:#0f172a;color:#cbd5e1;border-radius:3px;padding:12px 14px;font-family:'JetBrains Mono',monospace;font-size:10px;line-height:1.7;overflow-x:auto;margin-top:8px}
+.cm{color:#334155}.ck{color:#f59e0b}.cs{color:#86efac}.cf{color:#f97316}
+.outnote{background:#f0fdf4;border-left:3px solid var(--green);padding:10px 12px;font-size:12px;color:#166534;line-height:1.55;margin-top:8px;border-radius:0 3px 3px 0}
+.outnote strong{color:#14532d}
+
+/* DIVR */
+.divr{display:flex;align-items:center;gap:12px;margin:34px 0 20px}
+.dl{flex:1;height:1px;background:var(--rule)}
+.dt{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--muted);letter-spacing:.18em;text-transform:uppercase;white-space:nowrap}
+
+/* TOTALS */
+.totals{background:var(--ink);border-radius:3px;padding:22px 24px;display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:40px}
+@media(max-width:640px){.totals{grid-template-columns:1fr 1fr}}
+.tv{font-family:'Libre Baskerville',serif;font-size:38px;font-weight:700;color:var(--red);line-height:1}
+.tl{font-family:'JetBrains Mono',monospace;font-size:8px;color:#334155;letter-spacing:.15em;text-transform:uppercase}
+
+/* LAYOUT */
+.layout{max-width:1100px;margin:0 auto;padding:0 28px 80px;display:grid;grid-template-columns:200px 1fr;gap:0}
+@media(max-width:700px){.layout{grid-template-columns:1fr}.sidebar{display:none}}
+.sidebar{border-right:1px solid var(--rule);padding:28px 18px 28px 0;position:sticky;top:88px;height:calc(100vh - 88px);overflow-y:auto;scrollbar-width:thin}
+.sb-t{font-family:'JetBrains Mono',monospace;font-size:8px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:14px}
+.sb-i{display:flex;align-items:flex-start;gap:7px;padding:6px 0;border-bottom:1px solid #f1f5f9;cursor:pointer;color:var(--muted);transition:color .15s}
+.sb-i:hover{color:var(--red)}
+.sb-n{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--red);flex-shrink:0;margin-top:2px;width:22px}
+.sb-t2{font-size:10px;line-height:1.4}
+.sb-c{margin-left:auto;width:11px;height:11px;border-radius:50%;border:1.5px solid #ccc;flex-shrink:0;margin-top:2px;transition:all .2s}
+.sb-c.done{background:var(--green);border-color:var(--green)}
+.content{padding:28px 0 0 32px}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="hdr">
+  <div class="hdr-in">
+    <div>
+      <div class="hdr-eye">Our World in Data · compact.csv · 6 Years · Senior DA Portfolio</div>
+      <div class="hdr-title">COVID-19<br>Global Analytics</div>
+      <div class="hdr-sub">Pandemic waves, vaccination equity, mortality predictors,<br>healthcare strain & socioeconomic correlations — 262 countries, Jan 2020 – Feb 2026</div>
+    </div>
+    <div class="hdr-stats">
+      <span class="hst"><strong>779M</strong>Total Cases</span>
+      <span class="hst"><strong>7.11M</strong>Deaths</span>
+      <span class="hst"><strong>13.7B</strong>Vaccine Doses</span>
+      <span class="hst"><strong>570K</strong>Rows · 61 Cols</span>
+    </div>
+  </div>
+</div>
+
+<!-- NAV -->
+<div class="topnav">
+  <button class="tnb on" onclick="show('ps',this)">01 Problem Statement</button>
+  <button class="tnb" onclick="show('clean',this)">02 Data Cleaning</button>
+  <button class="tnb" onclick="show('analysis',this)">03 Analysis Tasks</button>
+  <button class="tnb" onclick="show('dash',this)">04 Dashboard & KPIs</button>
+  <button class="tnb" onclick="show('report',this)">05 Report Format</button>
+  <button class="tnb" onclick="show('tasks',this)">06 Full Task List</button>
+</div>
+<div class="prog">
+  <span class="plbl">Progress</span>
+  <div class="ptr"><div class="pfill" id="pf"></div></div>
+  <span class="ptxt" id="pt">0 / 24 tasks</span>
+</div>
+
+<!-- ═══ 01 PROBLEM STATEMENT ═══ -->
+<div id="ps" class="section on">
+<div class="sb">
+  <div class="phd"><div class="pp">Section 01</div><div class="ptitle">Problem Statement</div></div>
+
+  <div class="co">
+    <div class="co-h">🦠 What This Dataset Contains</div>
+    <div class="co-b">The <strong>Our World in Data compact.csv</strong> is the definitive public COVID-19 dataset — <strong>570,606 rows across 262 countries/regions, 61 columns, spanning January 2020 to February 2026</strong>. It integrates pandemic metrics (cases, deaths, hospitalisations, ICU, testing, reproduction rate, stringency) with vaccination data and structural country-level indicators (GDP per capita, median age, HDI, hospital beds, diabetes prevalence). This is a rare dataset where you can answer not just <em>what happened</em> — but <em>why it happened differently in different places</em>. It's the benchmark dataset for pandemic data analytics and one of the most-cited public health datasets in the world.</div>
+  </div>
+
+  <div class="g2" style="margin-bottom:18px">
+    <div class="co bl" style="margin-bottom:0">
+      <div class="co-h">👥 Stakeholders</div>
+      <div class="co-b"><strong>Primary:</strong> Public health policymakers, WHO/CDC analysts, Epidemiologists<br><br><strong>Secondary:</strong> Healthcare system planners, Vaccine equity researchers, Journalists, Policy researchers</div>
+    </div>
+    <div class="co am" style="margin-bottom:0">
+      <div class="co-h">📋 Dataset Structure</div>
+      <div class="co-b"><strong>262 countries/regions</strong> (incl. World aggregates &amp; income group rows)<br><strong>61 columns</strong>: cases, deaths, vax, tests, hospitalisation, policy, demographics<br><strong>6 years</strong>: Jan 2020 – Feb 2026 · <strong>570,606 rows</strong><br><strong>Huge nulls</strong>: many columns missing 30–99% of values</div>
+    </div>
+  </div>
+
+  <div class="phd" style="margin-top:28px"><div class="pp">Research Questions</div><div class="ptitle">Seven Questions This Project Answers</div></div>
+  <div class="g3">
+    <div class="card"><div class="cn">Q1</div><div class="ct">Pandemic Waves</div><div class="cb">When did the 4 major waves occur? How did peak case counts, death rates and vaccination coverage differ across waves?</div></div>
+    <div class="card"><div class="cn">Q2</div><div class="ct">Why Did Countries Differ?</div><div class="cb">Why does Peru have 6,604 deaths/million while Oceania has 221? What country-level factors predict mortality the most?</div></div>
+    <div class="card"><div class="cn">Q3</div><div class="ct">Vaccination Equity</div><div class="cb">Africa averages 24% full vaccination vs Europe's 65%. What drove this 41pp gap? Did the gap correlate with excess mortality?</div></div>
+    <div class="card"><div class="cn">Q4</div><div class="ct">Median Age Effect</div><div class="cb">Median age correlates 0.70 with death rate per million. Can we quantify this? Oldest vs youngest quintile: 2,485 vs 132 deaths/M.</div></div>
+    <div class="card"><div class="cn">Q5</div><div class="ct">Testing & Detection Bias</div><div class="cb">Cyprus tested 32,926/1,000 people. Africa tested far less. Does low testing mean undercounting? How reliable is African data?</div></div>
+    <div class="card"><div class="cn">Q6</div><div class="ct">Healthcare Capacity</div><div class="cb">How did hospital beds per thousand and ICU capacity affect outcomes? Which countries' healthcare systems were overwhelmed?</div></div>
+    <div class="card"><div class="cn">Q7</div><div class="ct">Policy Effectiveness</div><div class="cb">The stringency index vs cases correlation is near-zero (-0.008). Did lockdowns work? When, and for whom? Confounders?</div></div>
+  </div>
+
+  <div class="co gn">
+    <div class="co-h">🏆 Deliverables</div>
+    <div class="co-b">
+      <strong>1.</strong> Cleaned dataset: real countries only, aggregate rows flagged, date parsed, nulls documented<br>
+      <strong>2.</strong> Pandemic timeline: 4 waves identified, annotated, peak stats computed per wave<br>
+      <strong>3.</strong> Cross-country mortality analysis: top/bottom 20 countries, CFR by continent<br>
+      <strong>4.</strong> Socioeconomic correlation analysis: median age, GDP, HDI, hospital beds vs outcomes<br>
+      <strong>5.</strong> Vaccination equity analysis: coverage by continent, gap quantification, trend over time<br>
+      <strong>6.</strong> 6-page Tableau/Power BI dashboard (9 charts, 6 KPIs)<br>
+      <strong>7.</strong> Executive report with 3 policy-level recommendations
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ═══ 02 DATA CLEANING ═══ -->
+<div id="clean" class="section">
+<div class="sb">
+  <div class="phd"><div class="pp">Section 02</div><div class="ptitle">Data Cleaning & Engineering</div></div>
+
+  <div class="co or">
+    <div class="co-h">⚠️ Major Data Issues Found</div>
+    <div class="co-b">
+      <strong>Aggregate rows mixed in:</strong> "World", "Europe", "High-income countries", "Asia excl. China" etc. are in the same file as country rows — must be separated, not dropped.<br>
+      <strong>Extreme nulls:</strong> human_development_index is 100% null (all 570,606 rows). excess_mortality has 97% nulls. Many columns are missing 40–60% of values — especially for low-income countries.<br>
+      <strong>Zero ≠ NaN:</strong> Early pandemic rows show 0.0 for cases/deaths (pre-outbreak), while NaN means data simply wasn't reported. These are different and must be treated differently.<br>
+      <strong>Income group rows:</strong> "Upper-middle-income countries", "Lower-middle-income countries" etc. have no continent — these are analytical aggregates, not countries.<br>
+      <strong>Date up to Feb 2026:</strong> Data coverage becomes sparse after mid-2024 for many countries as reporting declined.
+    </div>
+  </div>
+
+  <table class="tbl">
+    <tr><th>#</th><th>Task</th><th>Column(s)</th><th>Action</th><th>Priority</th></tr>
+    <tr><td>1</td><td><strong>Parse date column</strong></td><td>date</td><td><code>pd.to_datetime(df['date'])</code>. Verify range: 2020-01-01 to 2026-02-22. Extract: year, month, quarter, year_month (Period).</td><td><span class="bge bg-r">Critical</span></td></tr>
+    <tr><td>2</td><td><strong>Separate real countries from aggregates</strong></td><td>continent</td><td>Create <code>is_country = df['continent'].notna()</code>. Real countries have a continent value. Aggregate rows (World, income groups, continental totals) have NaN continent — keep both but flag clearly.</td><td><span class="bge bg-r">Critical</span></td></tr>
+    <tr><td>3</td><td><strong>Drop human_development_index</strong></td><td>human_development_index</td><td>100% null across all 570,606 rows — completely unusable. Drop this column entirely. Document the drop.</td><td><span class="bge bg-r">Critical</span></td></tr>
+    <tr><td>4</td><td><strong>Document null rates per column</strong></td><td>All</td><td>Create null audit: <code>df.isnull().mean().sort_values(ascending=False)</code>. Columns &gt;60% null: excess_mortality series, ICU/hospitalisation series, handwashing_facilities — note in methodology.</td><td><span class="bge bg-r">Critical</span></td></tr>
+    <tr><td>5</td><td><strong>Create latest-per-country snapshot</strong></td><td>All</td><td><code>latest = df[df.continent.notna()].sort_values('date').groupby('country').last().reset_index()</code>. This becomes the primary cross-country comparison table (~239 rows).</td><td><span class="bge bg-r">Critical</span></td></tr>
+    <tr><td>6</td><td><strong>Compute Case Fatality Rate per country</strong></td><td>total_cases, total_deaths</td><td><code>latest['cfr'] = latest['total_deaths'] / latest['total_cases'] * 100</code>. Only where total_cases &gt; 1,000 (small case counts make CFR unreliable).</td><td><span class="bge bg-o">High</span></td></tr>
+    <tr><td>7</td><td><strong>Handle negative new_cases values</strong></td><td>new_cases, new_deaths</td><td>Negative values = retrospective corrections. For smoothed trend lines: replace negatives with 0 or NaN. For total calculations: use total_cases directly, not cumulative sum of new_cases.</td><td><span class="bge bg-o">High</span></td></tr>
+    <tr><td>8</td><td><strong>Engineer: wave classification</strong></td><td>date, new_cases_smoothed (World)</td><td>Assign wave labels to World rows: Wave 1 (Mar–Jun 2020), Wave 2 (Oct 2020–Feb 2021), Wave 3 (Mar–Sep 2021), Wave 4 (Oct 2021–Mar 2022 — Omicron), Endemic (Apr 2022+).</td><td><span class="bge bg-o">High</span></td></tr>
+    <tr><td>9</td><td><strong>Engineer: vax_gap (Africa equity metric)</strong></td><td>people_fully_vaccinated_per_hundred</td><td>For each country: <code>vax_gap = global_avg_vax - country_vax_rate</code>. Positive = below global average. Used for equity analysis.</td><td><span class="bge bg-o">High</span></td></tr>
+    <tr><td>10</td><td><strong>Engineer: median_age quintile</strong></td><td>median_age</td><td>5 quintiles: Young (&lt;22), Young-mid, Mid, Mid-old, Old (&gt;38). This is the key segmentation variable for mortality analysis (r=0.70).</td><td><span class="bge bg-o">High</span></td></tr>
+    <tr><td>11</td><td><strong>Identify and flag "World excl." rows</strong></td><td>country</td><td>Rows like "World excl. China", "World excl. China and South Korea" are valid for sensitivity analysis but must not be included in country-level counts or rankings.</td><td><span class="bge bg-o">High</span></td></tr>
+    <tr><td>12</td><td><strong>Create continent-level aggregation</strong></td><td>continent + all metrics</td><td>Aggregate latest_country by continent: sum cases/deaths, mean per-million metrics, mean vaccination coverage. This powers the continent comparison charts.</td><td><span class="bge bg-b">Medium</span></td></tr>
+    <tr><td>13</td><td><strong>Save clean datasets</strong></td><td>All</td><td>Save: <code>covid_full_clean.parquet</code> (all rows, parsed date), <code>covid_latest_countries.csv</code> (one row per real country), <code>covid_world_timeline.csv</code> (World row time series only).</td><td><span class="bge bg-r">Critical</span></td></tr>
+  </table>
+
+  <div class="codeblock">
+<span class="cm"># Complete cleaning pipeline skeleton</span><br>
+<span class="ck">import</span> pandas <span class="ck">as</span> pd, numpy <span class="ck">as</span> np<br><br>
+df = pd.<span class="cf">read_csv</span>(<span class="cs">'compact.csv'</span>)<br>
+df[<span class="cs">'date'</span>] = pd.<span class="cf">to_datetime</span>(df[<span class="cs">'date'</span>])<br>
+df = df.<span class="cf">drop</span>(columns=[<span class="cs">'human_development_index'</span>])  <span class="cm"># 100% null</span><br><br>
+<span class="cm"># Separate real countries from aggregates</span><br>
+real = df[df[<span class="cs">'continent'</span>].<span class="cf">notna</span>()].copy()<br>
+world = df[df[<span class="cs">'country'</span>] == <span class="cs">'World'</span>].copy()<br>
+aggregates = df[df[<span class="cs">'continent'</span>].<span class="cf">isna</span>() &amp; (df[<span class="cs">'country'</span>] != <span class="cs">'World'</span>)].copy()<br><br>
+<span class="cm"># Latest snapshot per real country</span><br>
+latest = real.<span class="cf">sort_values</span>(<span class="cs">'date'</span>).<span class="cf">groupby</span>(<span class="cs">'country'</span>).<span class="cf">last</span>().<span class="cf">reset_index</span>()<br>
+latest[<span class="cs">'cfr'</span>] = latest[<span class="cs">'total_deaths'</span>] / latest[<span class="cs">'total_cases'</span>] * 100<br>
+latest[<span class="cs">'age_quintile'</span>] = pd.<span class="cf">qcut</span>(latest[<span class="cs">'median_age'</span>], 5,<br>
+    labels=[<span class="cs">'Young'</span>,<span class="cs">'Young-mid'</span>,<span class="cs">'Mid'</span>,<span class="cs">'Mid-old'</span>,<span class="cs">'Old'</span>])<br><br>
+print(<span class="cs">f"Real countries: {len(latest)}"</span>)  <span class="cm"># ~239</span><br>
+print(<span class="cs">f"World rows: {len(world)}"</span>)  <span class="cm"># ~2,245</span><br>
+latest.<span class="cf">to_csv</span>(<span class="cs">'data/cleaned/covid_latest_countries.csv'</span>, index=False)
+  </div>
+</div>
+</div>
+
+<!-- ═══ 03 ANALYSIS ═══ -->
+<div id="analysis" class="section">
+<div class="sb">
+  <div class="phd"><div class="pp">Section 03</div><div class="ptitle">Analysis Tasks — 15 Core Analyses</div></div>
+  <table class="tbl">
+    <tr><th>#</th><th>Analysis</th><th>Method</th><th>Expected Finding</th><th>Type</th></tr>
+    <tr><td>1</td><td><strong>Global pandemic wave timeline</strong> — 7-day smoothed cases (World row)</td><td>world_df groupby month + new_cases_smoothed</td><td>4 waves: W1 Jan-Jun'20 (mild), W2 Oct'20–Feb'21 (big), W3 Delta Apr-Sep'21, W4 Omicron Dec'22 peak 6.4M/day. Endemic trend post-2023.</td><td><span class="bge bg-b">Descriptive</span></td></tr>
+    <tr><td>2</td><td><strong>Case Fatality Rate by continent</strong></td><td>continent groupby + sum deaths/cases</td><td>Africa 1.98%, S.America 1.96% worst. Oceania 0.22% best. Confounders: testing volume (Africa undercounts cases), healthcare capacity.</td><td><span class="bge bg-b">Descriptive</span></td></tr>
+    <tr><td>3</td><td><strong>Top 20 countries by deaths/million</strong> — ranking with continent colour</td><td>latest.nlargest(20,'total_deaths_per_million')</td><td>Peru 6,604 leads. Top 10 dominated by Eastern Europe. South American countries in top 15. Older populations + weaker healthcare systems.</td><td><span class="bge bg-b">Descriptive</span></td></tr>
+    <tr><td>4</td><td><strong>Median age vs deaths/million scatter</strong> — Pearson r</td><td>scatter + np.corrcoef</td><td>r = 0.70. Strong positive correlation. Old countries (median age &gt;40) average 2,485 deaths/million vs Young (&lt;22) at 132. Age is the strongest structural predictor.</td><td><span class="bge bg-a">Diagnostic</span></td></tr>
+    <tr><td>5</td><td><strong>GDP per capita vs deaths/million</strong></td><td>scatter + correlation</td><td>r = 0.343. Wealthier countries hit harder in absolute terms — counterintuitive but explainable by older populations and higher testing (more detected deaths).</td><td><span class="bge bg-a">Diagnostic</span></td></tr>
+    <tr><td>6</td><td><strong>Vaccination timeline by continent</strong> — area chart</td><td>real groupby continent + date + mean(people_fully_vaccinated_per_hundred)</td><td>High-income countries hit 60%+ by mid-2022. Africa still &lt;25% by 2024. The equity gap never closed. Europe rolled out fastest.</td><td><span class="bge bg-b">Descriptive</span></td></tr>
+    <tr><td>7</td><td><strong>Vaccination coverage gap — Africa vs Europe</strong></td><td>latest groupby continent + mean vax rate</td><td>Africa 24% vs Europe 65% = 41pp gap. Burundi 0.27%. Papua New Guinea 3.1%. Yemen 2.1%. Coverage correlated with income group.</td><td><span class="bge bg-a">Diagnostic</span></td></tr>
+    <tr><td>8</td><td><strong>Reproduction rate (Rt) timeline</strong></td><td>world Rt groupby month + mean</td><td>Initial R0 = 3.31 (Jan 2020). Dropped to ~0.9 during lockdowns. Peaked again ~1.24 Jan 2022 (Omicron). Endemic era: ~0.9–1.0 oscillation.</td><td><span class="bge bg-b">Descriptive</span></td></tr>
+    <tr><td>9</td><td><strong>Stringency index vs new cases — policy effectiveness</strong></td><td>Pearson r + scatter</td><td>r = -0.008 (near-zero). Lockdowns and cases are not simply correlated. Confounders: reverse causality (high cases → more restrictions), testing bias, lag effects.</td><td><span class="bge bg-a">Diagnostic</span></td></tr>
+    <tr><td>10</td><td><strong>Testing rates by country — detection bias analysis</strong></td><td>latest nlargest total_tests_per_thousand</td><td>Cyprus 32,926/1,000. Africa avg far below. Low testing = undercounted cases = artificially low CFR in Africa. "Iceberg effect" of undetected cases.</td><td><span class="bge bg-a">Diagnostic</span></td></tr>
+    <tr><td>11</td><td><strong>Hospitalisation peak analysis — Eastern Europe</strong></td><td>real groupby country + max hosp_patients_per_million</td><td>Bulgaria 1,527/M, Serbia 1,416/M led hospitalisation peaks. All Eastern Europe. Hospital capacity overwhelm directly linked to high death rates.</td><td><span class="bge bg-a">Diagnostic</span></td></tr>
+    <tr><td>12</td><td><strong>Excess mortality vs official deaths — true toll</strong></td><td>latest excess_mortality_cumulative top 10</td><td>Bolivia, Peru, Ecuador, Lebanon lead excess mortality. South America and parts of Middle East show enormous discrepancy between official and excess deaths — undercounting of 30–50%+.</td><td><span class="bge bg-a">Diagnostic</span></td></tr>
+    <tr><td>13</td><td><strong>Hospital beds per thousand vs outcomes</strong></td><td>scatter latest + correlation</td><td>Higher hospital beds correlates with better survival outcomes in high-income countries. But very high bed capacity (old communist-era) in Eastern Europe masked quality issues.</td><td><span class="bge bg-p">Predictive</span></td></tr>
+    <tr><td>14</td><td><strong>Multivariate correlation heatmap</strong> — structural vs outcomes</td><td>pearson heatmap: [deaths_per_M, cases_per_M, median_age, gdp_per_capita, hosp_beds, diabetes_prevalence, life_expectancy, vax_coverage]</td><td>Median age (0.70) &gt; life_expectancy (0.48) &gt; GDP (0.34) as death predictors. Diabetes prevalence and hospital beds add supplementary explanatory power.</td><td><span class="bge bg-p">Predictive</span></td></tr>
+    <tr><td>15</td><td><strong>Wave-by-wave vaccination vs death rate comparison</strong></td><td>Wave periods × avg_deaths_per_million grouped by vax_coverage_quartile</td><td>Wave 4 (Omicron) shows dramatically lower deaths in high-vax countries vs Wave 2 — direct evidence of vaccine effectiveness at population level.</td><td><span class="bge bg-p">Predictive</span></td></tr>
+  </table>
+</div>
+</div>
+
+<!-- ═══ 04 DASHBOARD ═══ -->
+<div id="dash" class="section">
+<div class="sb">
+  <div class="phd"><div class="pp">Section 04</div><div class="ptitle">Dashboard KPIs & Visualisation Specs</div></div>
+
+  <div class="g3">
+    <div class="kpi"><div class="kn">Total Global Cases</div><div class="kv" style="color:var(--red)">779M</div><div class="kd">World confirmed, all-time</div></div>
+    <div class="kpi" style="border-top-color:#dc2626"><div class="kn">Total Deaths</div><div class="kv" style="color:#7f1d1d">7.11M</div><div class="kd">Global CFR: 0.96%</div></div>
+    <div class="kpi gn"><div class="kn">Vaccine Doses</div><div class="kv" style="color:#14532d">13.72B</div><div class="kd">5.2B fully vaccinated</div></div>
+    <div class="kpi am"><div class="kn">Peak Daily Cases</div><div class="kv" style="color:#78350f">6.40M</div><div class="kd">Dec 26 2022 · Omicron BA.5</div></div>
+    <div class="kpi bl"><div class="kn">Highest Death Rate</div><div class="kv" style="color:#1e3a8a">Peru 6,604</div><div class="kd">per million — worst globally</div></div>
+    <div class="kpi pu"><div class="kn">Vaccination Gap</div><div class="kv" style="color:#4c1d95">41pp</div><div class="kd">Europe 65% vs Africa 24%</div></div>
+  </div>
+
+  <div class="divr"><div class="dl"></div><div class="dt">9 Chart Specifications</div><div class="dl"></div></div>
+
+  <table class="tbl">
+    <tr><th>#</th><th>Chart</th><th>Type</th><th>Config</th><th>Page</th><th>Why</th></tr>
+    <tr><td>1</td><td><strong>Global Pandemic Wave Timeline</strong></td><td><span class="bge bg-r">Area + Line</span></td><td>X: date · Y: new_cases_smoothed (World) · Fill under curve in red gradient · Annotate 4 wave peaks with vertical lines · Add vaccination rollout marker · Add wave labels</td><td>Overview</td><td>The single most important contextual chart. Every reader needs to see the full 6-year arc. Wave 4 Omicron peak visually dwarfs all others — sets the scale.</td></tr>
+    <tr><td>2</td><td><strong>Deaths/Million Top 20 Countries</strong></td><td><span class="bge bg-r">H-Bar</span></td><td>Y: country sorted by deaths/million · X: deaths/million · Color by continent · Peru in deepest red · Add CFR as secondary dot · Annotate Eastern Europe cluster</td><td>Country</td><td>Shows the enormous disparity — Peru 6,604 vs Japan ~300. Eastern Europe dominance is immediately visible and demands explanation.</td></tr>
+    <tr><td>3</td><td><strong>CFR by Continent Comparison</strong></td><td><span class="bge bg-b">Bar + Caveat</span></td><td>6 continent bars · Color: red=high, green=low · Add testing rate caveat text: "Africa's low CFR partly reflects undertesting" · Explain the paradox</td><td>Country</td><td>The CFR paradox — Africa and S.America are highest, but Oceania lowest despite geographic isolation. Explains why raw CFR needs testing context.</td></tr>
+    <tr><td>4</td><td><strong>Median Age vs Deaths/Million Scatter</strong></td><td><span class="bge bg-a">Scatter + Trendline</span></td><td>X: median_age · Y: total_deaths_per_million · Colour: continent · Size: population · Trendline with r=0.70 label · Annotate Peru (outlier above line) · Annotate Oceania (below line)</td><td>Predictors</td><td>r=0.70 is a strong finding — age is the single biggest structural predictor of pandemic mortality. This chart tells the whole story of why different countries fared so differently.</td></tr>
+    <tr><td>5</td><td><strong>Vaccination Coverage Over Time by Continent</strong></td><td><span class="bge bg-g">Multi-Line Area</span></td><td>X: date (2021–2024) · Y: people_fully_vaccinated_per_hundred · One line per continent · Colour code: Europe=blue, Africa=red · Highlight the divergence gap with a bracket annotation</td><td>Vaccination</td><td>The equity story told visually. Africa's line barely moves while Europe climbs steeply. The gap never closes — this is the central policy failure of the pandemic.</td></tr>
+    <tr><td>6</td><td><strong>Vaccination Equity Bar by Continent</strong></td><td><span class="bge bg-g">Bar</span></td><td>6 continents · Y: % fully vaccinated · Color gradient: green=high, red=low · Add global avg line at 47% · Add "41pp gap" annotation between Europe and Africa bars</td><td>Vaccination</td><td>Companion to chart 5 — static snapshot of the equity gap at the end of the data. Cleaner for presentations than the time-series.</td></tr>
+    <tr><td>7</td><td><strong>Reproduction Rate Timeline</strong></td><td><span class="bge bg-b">Line</span></td><td>X: date · Y: reproduction_rate (World) · Add Rt=1 reference line in red · Annotate R0=3.31 peak, lockdown dips, vaccine-era stabilisation · Shade above Rt=1 in red, below in green</td><td>Epidemiology</td><td>Shows the effectiveness of interventions more accurately than cases. Each time Rt drops below 1 = outbreak suppressed. The shaded dual-colour makes it instantly readable.</td></tr>
+    <tr><td>8</td><td><strong>Structural Predictors Correlation Heatmap</strong></td><td><span class="bge bg-a">Heatmap</span></td><td>Matrix: [deaths/M, cases/M, median_age, gdp_per_capita, hospital_beds, diabetes_prev, life_expectancy, vax_coverage] · Color: blue=positive, red=negative · Annotate strongest pair</td><td>Predictors</td><td>The "why" chart. Median age 0.70 dominates. GDP 0.34 is second. Hospital beds show nuance. This heatmap alone justifies the entire analysis approach.</td></tr>
+    <tr><td>9</td><td><strong>Excess Mortality vs Official Deaths</strong></td><td><span class="bge bg-a">Scatter + Diagonal</span></td><td>X: official total_deaths_per_million · Y: excess_mortality_cumulative · Countries above the 45° diagonal = undercounting · Colour: continent · Annotate Bolivia, Peru, Ecuador as outliers</td><td>Epidemiology</td><td>The undercounting story. Countries above the diagonal means true deaths exceed official counts. South America and parts of Middle East show enormous undercounting — sometimes 3-4× official counts.</td></tr>
+  </table>
+
+  <div class="co bl">
+    <div class="co-h">📐 Dashboard Layout — 6 Pages</div>
+    <div class="co-b">
+      <strong>Page 1 — Global Overview:</strong> 6 KPIs + Chart 1 (wave timeline) + CFR by continent mini-bar<br>
+      <strong>Page 2 — Country Rankings:</strong> Chart 2 (deaths/M ranking) + Chart 3 (CFR bars) + interactive country table<br>
+      <strong>Page 3 — Vaccination Equity:</strong> Chart 5 (time-series multi-line) + Chart 6 (continent bar) + lowest coverage country table<br>
+      <strong>Page 4 — Mortality Predictors:</strong> Chart 4 (age scatter) + Chart 8 (heatmap) + GDP scatter<br>
+      <strong>Page 5 — Epidemiology:</strong> Chart 7 (Rt timeline) + Chart 9 (excess mortality scatter) + testing rate bars<br>
+      <strong>Page 6 — Country Deep Dive:</strong> Single-country filter + all metrics over time — allows drilling to any country<br><br>
+      Global filters: Continent, Country, Date Range, Income Group
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ═══ 05 REPORT ═══ -->
+<div id="report" class="section">
+<div class="sb">
+  <div class="phd"><div class="pp">Section 05</div><div class="ptitle">Report Format</div></div>
+
+  <div style="background:var(--card);border:1px solid var(--rule);border-radius:4px;overflow:hidden;margin-bottom:12px">
+    <div style="background:var(--ink);color:#fff;padding:10px 16px;font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;display:flex;justify-content:space-between"><span>Section 1 — Executive Summary</span><span style="opacity:.4">1 PAGE MAX</span></div>
+    <div style="padding:16px 18px;font-size:13px;color:var(--muted);line-height:1.7">3 headline findings with real numbers. 3 policy recommendations. 6-metric KPI table. Lead with: "The COVID-19 pandemic killed 7.11 million people across 262 countries over 6 years — but outcomes varied 50-fold between countries."</div>
+  </div>
+  <div style="background:var(--card);border:1px solid var(--rule);border-radius:4px;overflow:hidden;margin-bottom:12px">
+    <div style="background:var(--ink);color:#fff;padding:10px 16px;font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;display:flex;justify-content:space-between"><span>Section 2 — Dataset & Methodology</span><span style="opacity:.4">1–2 PAGES</span></div>
+    <div style="padding:16px 18px;font-size:13px;color:var(--muted);line-height:1.7">Our World in Data source. 570,606 rows, 61 columns, 262 countries. Key cleaning decisions: aggregate rows separated, HDI dropped, zero vs NaN handling, latest snapshot created. Critical note: country comparisons are confounded by testing volume — caveat all CFR comparisons.</div>
+  </div>
+  <div style="background:var(--card);border:1px solid var(--rule);border-radius:4px;overflow:hidden;margin-bottom:12px">
+    <div style="background:var(--ink);color:#fff;padding:10px 16px;font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;display:flex;justify-content:space-between"><span>Section 3 — Key Findings (7 subsections)</span><span style="opacity:.4">5–6 PAGES</span></div>
+    <div style="padding:16px 18px;font-size:13px;color:var(--muted);line-height:1.7">
+      One subsection each: (1) The 4 waves — timelines and peak stats. (2) Country mortality ranking — Peru anomaly explained. (3) Age as the dominant predictor (r=0.70). (4) Vaccination equity gap — Africa vs Europe. (5) Reproduction rate — did lockdowns work? (6) Excess mortality — what the official data misses. (7) Testing bias — why comparisons need caveats.
+    </div>
+  </div>
+  <div style="background:var(--card);border:1px solid var(--rule);border-radius:4px;overflow:hidden;margin-bottom:12px">
+    <div style="background:var(--ink);color:#fff;padding:10px 16px;font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;display:flex;justify-content:space-between"><span>Section 4 — 3 Policy Recommendations</span><span style="opacity:.4">1–2 PAGES</span></div>
+    <div style="padding:16px 18px;font-size:13px;color:var(--muted);line-height:1.7">
+      <strong>Rec 1 (Vaccine Equity):</strong> The 41pp vaccination gap between Africa (24%) and Europe (65%) is the pandemic's defining equity failure. Future pandemic preparedness frameworks must include pre-negotiated vaccine access agreements for low-income countries — activated automatically, not negotiated under crisis conditions.<br><br>
+      <strong>Rec 2 (Age-Based Preparedness):</strong> Median age (r=0.70 with deaths/million) is the strongest structural predictor of pandemic mortality. Countries with median age &gt;40 should maintain higher baseline ICU capacity and faster vaccine deployment pipelines.<br><br>
+      <strong>Rec 3 (Data Infrastructure):</strong> Excess mortality in Bolivia, Peru, and Ecuador was 3–4× official death counts. Investment in civil registration systems in middle-income countries is essential for pandemic response — data gaps cost lives.
+    </div>
+  </div>
+  <div style="background:var(--card);border:1px solid var(--rule);border-radius:4px;overflow:hidden;margin-bottom:12px">
+    <div style="background:var(--ink);color:#fff;padding:10px 16px;font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;display:flex;justify-content:space-between"><span>Section 5 — Limitations & Next Steps</span><span style="opacity:.4">0.5 PAGE</span></div>
+    <div style="padding:16px 18px;font-size:13px;color:var(--muted);line-height:1.7">
+      CFR comparisons confounded by testing capacity. Excess mortality data only available for ~60 countries. African data severely underreported. HDI column fully empty. Human Development Index not available. Reporting dropped off sharply post-2024 for many countries. Next steps: geospatial choropleth map, variant-specific wave analysis, causal inference on vaccine effectiveness.
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ═══ 06 TASK LIST ═══ -->
+<div id="tasks" class="section">
+<div class="layout">
+<div class="sidebar">
+  <div class="sb-t">All Tasks</div>
+  <div id="sb-links"></div>
+</div>
+<div class="content">
+
+<!-- PHASE 0 -->
+<div id="p0">
+<div class="phd"><div class="pp">Phase 0</div><div class="ptitle">Setup & Data Inventory</div><div class="ptime">Day 1 · 3 hrs</div></div>
+
+<div class="task" id="t1">
+  <div class="th" onclick="tog('t1')"><div class="tcb" onclick="event.stopPropagation();tDone('t1')"><div class="cb">✓</div></div>
+  <div class="tm"><div class="tn">TASK 01 · SETUP</div><div class="tt">Create project, install dependencies, load CSV and print full inventory</div><div class="tgs"><span class="tg tg-py">Python</span></div></div>
+  <div class="tr"><span class="ef el">45 min</span><div class="pd pc"></div></div></div>
+  <div class="tb" id="b-t1"><div class="ti">
+    <div><div class="tbl-l">Steps</div><ul class="steps">
+      <li>Create: <code>covid_analytics/</code> with subfolders data/raw/, data/cleaned/, notebooks/, outputs/charts/, outputs/dashboard/, report/</li>
+      <li>Move compact.csv to data/raw/</li>
+      <li>Install: <code>pip install pandas numpy matplotlib seaborn scipy scikit-learn jupyter pyarrow plotly</code></li>
+      <li>Open <code>00_exploration.ipynb</code>. Load CSV. Print <code>df.shape</code> → (570606, 61). Print <code>df.dtypes</code>.</li>
+      <li>Print <code>df['country'].nunique()</code> → 262 (includes World + aggregates). <code>df['continent'].value_counts(dropna=False)</code></li>
+      <li>Note: continent is NaN for World and income group rows (41,820 rows) — critical discovery</li>
+      <li>Print <code>df.isnull().mean().sort_values(ascending=False).head(20)</code> — human_development_index = 1.0 (100% null)</li>
+      <li>Git init + commit "init: COVID-19 analytics project"</li>
+    </ul></div>
+    <div><div class="tbl-l">Critical First Discovery</div>
+    <div class="outnote"><strong>The dataset has two types of rows:</strong> (1) Real country rows — have a continent value (528,390 rows), and (2) Aggregate rows — "World", "Africa", "High-income countries" etc. have NULL continent (41,816 rows). These must never be mixed in country-level analysis. Document this clearly in your first notebook markdown cell.</div></div>
+  </div></div>
+</div>
+
+<div class="task" id="t2">
+  <div class="th" onclick="tog('t2')"><div class="tcb" onclick="event.stopPropagation();tDone('t2')"><div class="cb">✓</div></div>
+  <div class="tm"><div class="tn">TASK 02 · EXPLORATION</div><div class="tt">Document null audit, date range, all 262 entity types</div><div class="tgs"><span class="tg tg-py">Python</span></div></div>
+  <div class="tr"><span class="ef el">1 hr</span><div class="pd pc"></div></div></div>
+  <div class="tb" id="b-t2"><div class="ti">
+    <div><div class="tbl-l">Steps</div><ul class="steps">
+      <li>Parse date: <code>df['date'] = pd.to_datetime(df['date'])</code>. Print min/max: 2020-01-01 to 2026-02-22.</li>
+      <li>Build null audit table: null % per column, sorted descending. Save as CSV for methodology section.</li>
+      <li>Key columns to note: total_cases ~2.2% null, excess_mortality ~97.6% null, hosp_patients ~92.9% null</li>
+      <li>List all non-country entities: <code>df[df['continent'].isna()]['country'].unique()</code> — World, Asia, Africa, High-income etc.</li>
+      <li>Check: zero vs NaN in early rows (2020-01-01): <code>df[df['country']=='Afghanistan'].head(10)[['date','total_cases','new_cases']]</code></li>
+      <li>Identify the last reliable reporting date per country (when new_cases reporting stopped)</li>
+      <li>Document all in a comprehensive data inventory markdown</li>
+    </ul></div>
+    <div><div class="tbl-l">Null Audit Priority Columns</div>
+    <div class="codeblock"><span class="cm">Column                          Null %</span><br>
+<span class="cs">human_development_index         100.0%</span>  <span class="cm">← DROP</span><br>
+<span class="cs">excess_mortality_*              ~97.6%</span>  <span class="cm">← Limited use</span><br>
+<span class="cs">hosp_patients                   ~92.9%</span>  <span class="cm">← Subset only</span><br>
+<span class="cs">icu_patients                    ~93.1%</span>  <span class="cm">← Subset only</span><br>
+<span class="cs">handwashing_facilities          ~52.2%</span>  <span class="cm">← Handle</span><br>
+<span class="cs">total_vaccinations              ~85.4%</span>  <span class="cm">← Many 0 rows early</span><br>
+<span class="cs">total_cases                      ~2.2%</span>  <span class="cm">← Small, pre-outbreak</span></div></div>
+  </div></div>
+</div>
+</div><!-- end p0 -->
+
+<!-- PHASE 1 -->
+<div id="p1">
+<div class="divr"><div class="dl"></div><div class="dt">Phase 1 — Cleaning</div><div class="dl"></div></div>
+<div class="phd"><div class="pp">Phase 1</div><div class="ptitle">Data Cleaning & Feature Engineering</div><div class="ptime">Days 2–3 · ~6 hrs</div></div>
+
+<div class="task" id="t3">
+  <div class="th" onclick="tog('t3')"><div class="tcb" onclick="event.stopPropagation();tDone('t3')"><div class="cb">✓</div></div>
+  <div class="tm"><div class="tn">TASK 03 · CLEANING</div><div class="tt">Separate real countries, World timeline, and aggregate rows</div><div class="tgs"><span class="tg tg-py">Python</span></div></div>
+  <div class="tr"><span class="ef em">1 hr</span><div class="pd pc"></div></div></div>
+  <div class="tb" id="b-t3"><div class="ti">
+    <div><div class="tbl-l">Steps</div><ul class="steps">
+      <li>Open <code>01_cleaning.ipynb</code>. Load CSV with date parsing.</li>
+      <li>Create three DataFrames: <code>real = df[df['continent'].notna()]</code> (~528K rows, 239 countries)</li>
+      <li><code>world = df[df['country']=='World']</code> (~2,245 rows — the global timeline)</li>
+      <li><code>aggregates = df[(df['continent'].isna()) & (df['country']!='World')]</code> (~40K rows — continents, income groups)</li>
+      <li>Drop <code>human_development_index</code> from all DataFrames — 100% null</li>
+      <li>Verify: <code>len(real) + len(world) + len(aggregates) == len(df)</code></li>
+      <li>Create latest snapshot: <code>latest = real.sort_values('date').groupby('country').last().reset_index()</code></li>
+      <li>Print: 239 unique real countries confirmed in latest snapshot</li>
+    </ul></div>
+    <div><div class="tbl-l">Expected Output</div>
+    <div class="outnote"><strong>Three clean DataFrames:</strong> real (528K rows), world (2,245 rows), aggregates (40K rows). latest snapshot (239 rows, one per country). These four objects are the foundation for all subsequent analyses.</div></div>
+  </div></div>
+</div>
+
+<div class="task" id="t4">
+  <div class="th" onclick="tog('t4')"><div class="tcb" onclick="event.stopPropagation();tDone('t4')"><div class="cb">✓</div></div>
+  <div class="tm"><div class="tn">TASK 04 · FEATURE ENGINEERING</div><div class="tt">Engineer CFR, wave labels, age quintiles, vax gap, median_age quintile</div><div class="tgs"><span class="tg tg-py">Python</span></div></div>
+  <div class="tr"><span class="ef em">1.5 hrs</span><div class="pd pc"></div></div></div>
+  <div class="tb" id="b-t4"><div class="ti">
+    <div><div class="tbl-l">Steps</div><ul class="steps">
+      <li><code>latest['cfr'] = latest['total_deaths'] / latest['total_cases'] * 100</code> — only where total_cases &gt; 1000</li>
+      <li>Age quintile: <code>pd.qcut(latest['median_age'], 5, labels=['Young','Young-mid','Mid','Mid-old','Old'])</code></li>
+      <li>Wave labels on world DataFrame:<br>Wave 1: 2020-01 to 2020-09<br>Wave 2: 2020-10 to 2021-03<br>Wave 3: 2021-04 to 2021-11<br>Wave 4 / Omicron: 2021-12 to 2022-06<br>Endemic: 2022-07 onwards</li>
+      <li>Global avg vaccination: compute, then <code>latest['vax_gap'] = global_avg - latest['people_fully_vaccinated_per_hundred']</code></li>
+      <li>Year and month columns: <code>real['year'] = real['date'].dt.year</code>, <code>real['month'] = real['date'].dt.month</code></li>
+      <li>Save: <code>latest.to_csv('data/cleaned/covid_latest_countries.csv', index=False)</code></li>
+      <li>Save: <code>world.to_csv('data/cleaned/covid_world_timeline.csv', index=False)</code></li>
+    </ul></div>
+    <div><div class="tbl-l">Expected Output</div>
+    <div class="outnote"><strong>latest DataFrame gains 4 columns:</strong> cfr, age_quintile, wave (joined from world timeline dates), vax_gap. These power the cross-country analysis and scatter plots. Age quintile validation: "Old" quintile mean deaths = 2,485/M vs "Young" = 132/M confirms r=0.70.</div></div>
+  </div></div>
+</div>
+</div><!-- end p1 -->
+
+<!-- PHASE 2 -->
+<div id="p2">
+<div class="divr"><div class="dl"></div><div class="dt">Phase 2 — EDA</div><div class="dl"></div></div>
+<div class="phd"><div class="pp">Phase 2</div><div class="ptitle">Exploratory Data Analysis</div><div class="ptime">Days 3–8 · ~14 hrs</div></div>
+
+<div class="task" id="t5">
+  <div class="th" onclick="tog('t5')"><div class="tcb" onclick="event.stopPropagation();tDone('t5')"><div class="cb">✓</div></div>
+  <div class="tm"><div class="tn">TASK 05 · EDA</div><div class="tt">Global pandemic wave timeline — World new_cases_smoothed area chart</div><div class="tgs"><span class="tg tg-py">Python</span><span class="tg tg-v">Matplotlib</span></div></div>
+  <div class="tr"><span class="ef em">2 hrs</span><div class="pd pc"></div></div></div>
+  <div class="tb" id="b-t5"><div class="ti">
+    <div><div class="tbl-l">Steps</div><ul class="steps">
+      <li>Open <code>02_eda.ipynb</code>. Use world DataFrame.</li>
+      <li>Plot: plt.fill_between(world['date'], world['new_cases_smoothed'], alpha=0.3, color='red')</li>
+      <li>Add: plt.plot for the line, label all 4 wave peaks with vertical dashed lines</li>
+      <li>Wave 1 peak: ~Jan 2021 (730,942/day), Wave 4 Omicron: Dec 26 2022 (6,402,033/day)</li>
+      <li>Add vaccination start marker: Dec 2020 vertical line in green, labeled "Vaccines begin"</li>
+      <li>Add twin Y-axis or annotation showing global vaccination % milestones (10%, 25%, 50%)</li>
+      <li>Shade endemic period (2022-07+) in lighter colour to visually differentiate from pandemic phase</li>
+      <li>Write observation: "The Omicron wave (Dec 2022) had 8.7× more daily cases than any prior wave, yet caused proportionally fewer deaths — suggesting vaccine-driven immunity was protective."</li>
+    </ul></div>
+    <div><div class="tbl-l">Expected Finding</div>
+    <div class="outnote"><strong>Critical Omicron paradox:</strong> Dec 2022 peak = 6.4M cases/day — 8.7× Wave 3 peak. But death rate per case was dramatically lower. This is the vaccine effectiveness signal at population scale. The chart literally shows vaccines working — deaths decoupled from cases in 2022.</div></div>
+  </div></div>
+</div>
+
+<div class="task" id="t6">
+  <div class="th" onclick="tog('t6')"><div class="tcb" onclick="event.stopPropagation();tDone('t6')"><div class="cb">✓</div></div>
+  <div class="tm"><div class="tn">TASK 06 · EDA</div><div class="tt">Deaths per million ranking — top 20 countries with continent colour</div><div class="tgs"><span class="tg tg-py">Python</span><span class="tg tg-v">Seaborn</span></div></div>
+  <div class="tr"><span class="ef em">1.5 hrs</span><div class="pd pc"></div></div></div>
+  <div class="tb" id="b-t6"><div class="ti">
+    <div><div class="tbl-l">Steps</div><ul class="steps">
+      <li>Use latest DataFrame. Filter: total_cases &gt; 10,000 (exclude very small nations with unreliable stats)</li>
+      <li>Plot top 20 by total_deaths_per_million as horizontal bar, sorted descending</li>
+      <li>Colour bars by continent. Add CFR value as text at end of each bar.</li>
+      <li>Annotate: "Eastern Europe dominates Top 10 — older populations + healthcare strain"</li>
+      <li>Note Peru anomaly: South America in top 2 despite younger median age. Research: severe healthcare system collapse in 2020 before vaccines, excess mortality data confirms undercounting</li>
+      <li>Bottom 20: add a companion chart for the best-performing countries. Oceania + Africa (testing caveat)</li>
+      <li>Write: "The 50-fold mortality gap between Peru (6,604) and low-death countries cannot be explained by any single factor — it reflects a convergence of demographic risk, healthcare capacity, and early pandemic response speed."</li>
+    </ul></div>
+    <div><div class="tbl-l">Expected Finding</div>
+    <div class="outnote"><strong>Eastern Europe pattern:</strong> Bulgaria, N.Macedonia, Bosnia, Hungary, Croatia — 5 of the top 10 are Eastern European. All share: older median age (39-43), lower hospital quality vs capacity, lower vaccination uptake, and limited ICU capacity relative to peak demand. This cluster finding is a major analytical story.</div></div>
+  </div></div>
+</div>
+
+<div class="task" id="t7">
+  <div class="th" onclick="tog('t7')"><div class="tcb" onclick="event.stopPropagation();tDone('t7')"><div class="cb">✓</div></div>
+  <div class="tm"><div class="tn">TASK 07 · EDA</div><div class="tt">Median age vs deaths/million scatter — prove the r=0.70 correlation</div><div class="tgs"><span class="tg tg-py">Python</span><span class="tg tg-s">Stats</span></div></div>
+  <div class="tr"><span class="ef eh">2.5 hrs</span><div class="pd pc"></div></div></div>
+  <div class="tb" id="b-t7"><div class="ti">
+    <div><div class="tbl-l">Steps</div><ul class="steps">
+      <li>Filter latest to countries with both median_age and total_deaths_per_million values (~190 countries)</li>
+      <li>Create scatter: x=median_age, y=total_deaths_per_million, colour=continent, size=population (scaled)</li>
+      <li>Add trendline: <code>np.polyfit(x, y, 1)</code> and plot. Compute and annotate: r = 0.70, p-value</li>
+      <li>Label notable outliers ABOVE trendline: Peru, Bulgaria — explain why they're worse than their age predicts</li>
+      <li>Label outliers BELOW trendline: Japan, South Korea — explain why they outperformed their age prediction (healthcare quality, mask culture, early response)</li>
+      <li>Show age quintile violin plot: 5 boxes showing distribution of deaths/M per age quintile</li>
+      <li>Quantify: Old quintile avg = 2,485/M, Young quintile avg = 132/M — state the 19× mortality gap</li>
+    </ul></div>
+    <div><div class="tbl-l">Expected Finding</div>
+    <div class="outnote"><strong>This is the headline analytical finding of the project:</strong> r = 0.70 makes median age the strongest single predictor of COVID-19 mortality at country level. The 19× mortality gap between oldest and youngest quintiles is the most powerful number in this dataset. Older nations needed more vaccines, faster — and this dataset shows many didn't get them.</div></div>
+  </div></div>
+</div>
+
+<div class="task" id="t8">
+  <div class="th" onclick="tog('t8')"><div class="tcb" onclick="event.stopPropagation();tDone('t8')"><div class="cb">✓</div></div>
+  <div class="tm"><div class="tn">TASK 08 · EDA</div><div class="tt">Vaccination equity gap — Africa vs Europe timeline + static bar</div><div class="tgs"><span class="tg tg-py">Python</span><span class="tg tg-v">Matplotlib</span></div></div>
+  <div class="tr"><span class="ef eh">2.5 hrs</span><div class="pd pc"></div></div></div>
+  <div class="tb" id="b-t8"><div class="ti">
+    <div><div class="tbl-l">Steps</div><ul class="steps">
+      <li>Use real DataFrame. Filter to 2021–2024 where vaccination data exists.</li>
+      <li>groupby continent + date → mean(people_fully_vaccinated_per_hundred). Plot as multi-line chart (one line per continent)</li>
+      <li>Use distinct colours: Europe=blue, Africa=red, Asia=purple, N.America=orange, S.America=green, Oceania=yellow</li>
+      <li>Add a shaded band between Europe and Africa lines: label "41pp gap never closed"</li>
+      <li>Companion bar chart: latest coverage by continent (static, for presentation use)</li>
+      <li>Bottom 10 countries table: Burundi 0.27%, Yemen 2.11%, Papua New Guinea 3.15% — research reasons for each</li>
+      <li>Write: "The vaccine equity gap between high-income and low-income regions was the pandemic's defining failure. Africa's average 24% coverage in 2024 vs Europe's 65% means 41 percentage points — over 400 million people — who could have been better protected were not."</li>
+    </ul></div>
+    <div><div class="tbl-l">Expected Finding</div>
+    <div class="outnote"><strong>The gap never closed:</strong> From vaccine rollout (Dec 2020) to the end of data (2024), Africa's vaccination rate increased but never approached Europe's. The divergence happened in H1 2021 when COVAX delays and IP restrictions meant high-income countries cornered supply. This is documented public health history.</div></div>
+  </div></div>
+</div>
+
+<div class="task" id="t9">
+  <div class="th" onclick="tog('t9')"><div class="tcb" onclick="event.stopPropagation();tDone('t9')"><div class="cb">✓</div></div>
+  <div class="tm"><div class="tn">TASK 09 · EDA</div><div class="tt">Reproduction rate timeline + stringency policy analysis</div><div class="tgs"><span class="tg tg-py">Python</span><span class="tg tg-s">Stats</span></div></div>
+  <div class="tr"><span class="ef em">2 hrs</span><div class="pd pc"></div></div></div>
+  <div class="tb" id="b-t9"><div class="ti">
+    <div><div class="tbl-l">Steps</div><ul class="steps">
+      <li>Use world DataFrame. Plot reproduction_rate over time. Add Rt=1 reference line.</li>
+      <li>Shade above Rt=1 in red (growing outbreak), below in green (declining outbreak)</li>
+      <li>Annotate: R0=3.31 (Jan 2020), First lockdown dip (~Apr 2020), Omicron surge (Dec 2021, Rt=1.24)</li>
+      <li>For policy analysis: <code>real[['stringency_index','new_cases_per_million']].corr()</code> — expect ~-0.008</li>
+      <li>Discuss why: reverse causality (high cases cause high stringency), lag effects, heterogeneity across countries, and the fact that this is a correlation not a controlled experiment</li>
+      <li>This is where you demonstrate statistical sophistication: a near-zero correlation does NOT mean lockdowns didn't work — it means simple correlation cannot answer this question due to confounders</li>
+      <li>Write the nuanced interpretation in your report — this is what separates senior from junior analysis</li>
+    </ul></div>
+    <div><div class="tbl-l">Nuanced Interpretation</div>
+    <div class="outnote"><strong>The stringency-cases paradox explained:</strong> Countries imposed strict measures BECAUSE cases were rising — so high stringency and high cases appear together. This reverse causality makes correlation near-zero or even slightly positive. A causal analysis would require natural experiments or regression discontinuity designs — beyond this project's scope, but important to acknowledge.</div></div>
+  </div></div>
+</div>
+
+<div class="task" id="t10">
+  <div class="th" onclick="tog('t10')"><div class="tcb" onclick="event.stopPropagation();tDone('t10')"><div class="cb">✓</div></div>
+  <div class="tm"><div class="tn">TASK 10 · EDA</div><div class="tt">Multivariate correlation heatmap + excess mortality scatter</div><div class="tgs"><span class="tg tg-py">Python</span><span class="tg tg-s">Stats</span></div></div>
+  <div class="tr"><span class="ef eh">2.5 hrs</span><div class="pd pc"></div></div></div>
+  <div class="tb" id="b-t10"><div class="ti">
+    <div><div class="tbl-l">Steps</div><ul class="steps">
+      <li>Select columns: total_deaths_per_million, total_cases_per_million, median_age, gdp_per_capita, hospital_beds_per_thousand, diabetes_prevalence, life_expectancy, people_fully_vaccinated_per_hundred</li>
+      <li>Compute Pearson correlation matrix on latest. Plot seaborn heatmap with annotation.</li>
+      <li>Key correlations to highlight: median_age–deaths (0.70), gdp–deaths (0.34), life_expectancy–deaths (0.48)</li>
+      <li>For excess mortality: scatter excess_mortality_cumulative vs total_deaths_per_million</li>
+      <li>The 45° diagonal represents perfect reporting. Countries above = undercounting. Annotate Bolivia, Peru, Ecuador above the line.</li>
+      <li>Write: "Countries in South America show excess mortality 3–4× their official death counts — indicating massive undercounting of true COVID-19 deaths during the pandemic."</li>
+      <li>Save both charts to outputs/charts/</li>
+    </ul></div>
+    <div><div class="tbl-l">Expected Finding</div>
+    <div class="outnote"><strong>Heatmap hierarchy:</strong> median_age (0.70) &gt; life_expectancy (0.48) &gt; gdp (0.34) as death predictors. Diabetes prevalence surprisingly weak (0.15). Hospital beds shows complex pattern: high beds in rich countries correlate with better outcomes but Eastern Europe has high beds + high deaths — quantity ≠ quality.</div></div>
+  </div></div>
+</div>
+</div><!-- end p2 -->
+
+<!-- PHASE 3 -->
+<div id="p3">
+<div class="divr"><div class="dl"></div><div class="dt">Phase 3 — Dashboard & Report</div><div class="dl"></div></div>
+<div class="phd"><div class="pp">Phase 3</div><div class="ptitle">Dashboard Build + Report + Portfolio</div><div class="ptime">Days 9–14 · ~12 hrs</div></div>
+
+<div class="task" id="t11">
+  <div class="th" onclick="tog('t11')"><div class="tcb" onclick="event.stopPropagation();tDone('t11')"><div class="cb">✓</div></div>
+  <div class="tm"><div class="tn">TASK 11 · DASHBOARD</div><div class="tt">Export 5 summary files for Tableau/Power BI</div><div class="tgs"><span class="tg tg-v">Tableau</span><span class="tg tg-py">Python</span></div></div>
+  <div class="tr"><span class="ef em">1.5 hrs</span><div class="pd pc"></div></div></div>
+  <div class="tb" id="b-t11"><div class="ti">
+    <div><div class="tbl-l">Steps — 5 Export Files</div><ul class="steps">
+      <li><strong>world_monthly.csv:</strong> year_month, new_cases_smoothed, new_deaths_smoothed, reproduction_rate, wave_label, total_vaccinations</li>
+      <li><strong>country_snapshot.csv:</strong> country, continent, total_cases_per_million, total_deaths_per_million, cfr, people_fully_vaccinated_per_hundred, median_age, gdp_per_capita, age_quintile</li>
+      <li><strong>continent_timeline.csv:</strong> continent, year_month, mean(people_fully_vaccinated_per_hundred), sum(total_cases), mean(new_cases_smoothed_per_million)</li>
+      <li><strong>testing_summary.csv:</strong> country, continent, total_tests_per_thousand, positive_rate — for testing bias analysis</li>
+      <li><strong>excess_mortality.csv:</strong> country, continent, total_deaths_per_million, excess_mortality_cumulative — for excess mortality scatter</li>
+      <li>All files to outputs/dashboard/. Connect in Tableau via Data Source tab.</li>
+    </ul></div>
+    <div><div class="tbl-l">Note</div>
+    <div class="outnote">The full compact.csv (570K rows) can be connected directly to Tableau but is slow. Use world_monthly.csv (2,245 rows) for the global trend chart — it renders instantly. Use country_snapshot.csv (239 rows) for all country scatter plots and bar charts. The full file is only needed for Page 6 (country deep dive drill-through).</div></div>
+  </div></div>
+</div>
+
+<div class="task" id="t12">
+  <div class="th" onclick="tog('t12')"><div class="tcb" onclick="event.stopPropagation();tDone('t12')"><div class="cb">✓</div></div>
+  <div class="tm"><div class="tn">TASK 12 · DASHBOARD</div><div class="tt">Build Pages 1–3: Overview, Country Rankings, Vaccination Equity</div><div class="tgs"><span class="tg tg-v">Tableau / Power BI</span></div></div>
+  <div class="tr"><span class="ef eh">4 hrs</span><div class="pd pc"></div></div></div>
+  <div class="tb" id="b-t12"><div class="ti">
+    <div><div class="tbl-l">Steps</div><ul class="steps">
+      <li>Page 1 Overview: 6 KPI cards (cases, deaths, doses, CFR, peak day, vax gap) + global wave area chart + continent CFR bar</li>
+      <li>Dark navy (#0f172a) header, red (#ef4444) wave chart fill, green (#22c55e) vaccination line</li>
+      <li>Page 2 Country Rankings: deaths/million horizontal bar (top 20, colour by continent) + CFR bar with testing caveat note box</li>
+      <li>Add global filters: Continent dropdown, Date Range slider, Income Group toggle</li>
+      <li>Page 3 Vaccination: multi-line continent timeline + static continent bar + bottom 10 countries table</li>
+      <li>Highlight the Europe-Africa divergence with a shaded gap band on the timeline chart</li>
+      <li>Screenshot each page → save to outputs/dashboard/</li>
+    </ul></div>
+    <div><div class="tbl-l">Design Standard</div>
+    <div class="outnote">Each page has ONE primary finding callout box in the top right. P1: "Peak: Dec 26 2022 — 6.4M daily cases." P2: "Peru has 50× higher death rate than lowest-mortality countries." P3: "Africa's vaccination coverage peaked at 24% — 41pp below Europe's 65%." These callouts make the insight impossible to miss.</div></div>
+  </div></div>
+</div>
+
+<div class="task" id="t13">
+  <div class="th" onclick="tog('t13')"><div class="tcb" onclick="event.stopPropagation();tDone('t13')"><div class="cb">✓</div></div>
+  <div class="tm"><div class="tn">TASK 13 · DASHBOARD</div><div class="tt">Build Pages 4–6: Predictors, Epidemiology, Country Deep Dive</div><div class="tgs"><span class="tg tg-v">Tableau / Power BI</span></div></div>
+  <div class="tr"><span class="ef eh">3 hrs</span><div class="pd pc"></div></div></div>
+  <div class="tb" id="b-t13"><div class="ti">
+    <div><div class="tbl-l">Steps</div><ul class="steps">
+      <li>Page 4 Predictors: median age scatter (bubble chart) + correlation heatmap + GDP scatter</li>
+      <li>Bubble chart: x=median_age, y=deaths/M, size=population, colour=continent. Add trendline. Annotate outliers.</li>
+      <li>Page 5 Epidemiology: Rt timeline + excess mortality scatter + testing rates horizontal bar</li>
+      <li>Rt chart: shade above/below Rt=1 in red/green. Add annotation boxes at key dates.</li>
+      <li>Page 6 Deep Dive: single-country selector. Show all key metrics over time for selected country. Auto-generates a "country profile" view.</li>
+      <li>Country profile: cases/deaths timeline + vaccination curve + testing rate + reproduction rate in a 2×2 panel layout</li>
+    </ul></div>
+    <div><div class="tbl-l">Expected Output</div>
+    <div class="outnote">6-page dashboard. Page 6 is the most technically impressive — a dynamic country drill-down that adapts to any of the 239 countries. This demonstrates Tableau/Power BI parameter usage and is immediately useful for any public health researcher wanting to explore any country's pandemic story.</div></div>
+  </div></div>
+</div>
+
+<div class="task" id="t14">
+  <div class="th" onclick="tog('t14')"><div class="tcb" onclick="event.stopPropagation();tDone('t14')"><div class="cb">✓</div></div>
+  <div class="tm"><div class="tn">TASK 14 · REPORT</div><div class="tt">Write Executive Summary + Key Findings + 3 policy recommendations</div><div class="tgs"><span class="tg tg-r">Report</span></div></div>
+  <div class="tr"><span class="ef eh">3 hrs</span><div class="pd pc"></div></div></div>
+  <div class="tb" id="b-t14"><div class="ti">
+    <div><div class="tbl-l">Steps</div><ul class="steps">
+      <li>Open with impact statement: "The COVID-19 pandemic caused at least 7.11 million confirmed deaths across 262 countries over 6 years — but outcomes varied 50-fold, from 6,604 deaths/million in Peru to fewer than 200/million in several African and island nations."</li>
+      <li>Finding 1: Median age r=0.70 — the dominant mortality predictor. Oldest quintile: 2,485/M vs youngest: 132/M (19× gap).</li>
+      <li>Finding 2: Vaccination equity — Africa's 24% vs Europe's 65% — the gap that never closed.</li>
+      <li>Finding 3: Omicron wave (Dec 2022) had 8.7× more daily cases than any prior wave, yet deaths per case were dramatically lower — the clearest population-level signal of vaccine protection in the dataset.</li>
+      <li>3 policy recommendations (see Section 05 for full text)</li>
+      <li>KPI table: 6 metrics with values, context, source, and data quality note</li>
+    </ul></div>
+    <div><div class="tbl-l">Caption Rule</div>
+    <div class="outnote"><strong>Insight-first captions every time:</strong><br>Wrong: "Scatter plot of median age vs deaths per million"<br>Right: "Countries with median age above 38 averaged 2,485 deaths per million — 19× higher than the youngest-population quintile (132/M). Age is the strongest single predictor of national COVID-19 mortality (r=0.70)."</div></div>
+  </div></div>
+</div>
+
+<div class="task" id="t15">
+  <div class="th" onclick="tog('t15')"><div class="tcb" onclick="event.stopPropagation();tDone('t15')"><div class="cb">✓</div></div>
+  <div class="tm"><div class="tn">TASK 15 · PORTFOLIO</div><div class="tt">Polish README + publish Tableau + LinkedIn post</div><div class="tgs"><span class="tg tg-r">GitHub</span><span class="tg tg-v">Tableau Public</span></div></div>
+  <div class="tr"><span class="ef em">1.5 hrs</span><div class="pd pc"></div></div></div>
+  <div class="tb" id="b-t15"><div class="ti">
+    <div><div class="tbl-l">Steps</div><ul class="steps">
+      <li>README: "I analysed 6 years of COVID-19 data across 262 countries — 570,606 rows, 61 columns, from Our World in Data." Include 3 findings with real numbers + 2 dashboard screenshots.</li>
+      <li>Explain the key analytical challenge: "The hardest part was separating real country rows from aggregate rows, handling the massive null rates, and contextualising CFR differences given wildly different testing volumes."</li>
+      <li>Skills section: Python (Pandas large-scale, Seaborn), time-series analysis, cross-country correlation, epidemiological concepts (Rt, CFR, excess mortality), Tableau, public health domain knowledge</li>
+      <li>LinkedIn: "I just finished a 6-year COVID-19 analysis. The finding that surprised me most: median age (r=0.70) explains more of the national death rate variation than GDP, healthcare capacity, or lockdown stringency..." + chart + links</li>
+      <li>Tags: #COVID19 #DataAnalytics #PublicHealth #Python #Tableau #Epidemiology #PortfolioProject</li>
+    </ul></div>
+    <div><div class="tbl-l">What Makes This Stand Out</div>
+    <div class="outnote"><strong>Most COVID portfolio projects show just a timeline chart.</strong> Yours shows: wave identification, country mortality ranking, the age-mortality correlation (r=0.70), vaccination equity analysis, the Omicron vaccine-protection signal, excess mortality undercounting, policy effectiveness nuance (stringency paradox), and the data quality caveats. That's a research-grade analysis, not just a data visualisation.</div></div>
+  </div></div>
+</div>
+
+<!-- TOTALS -->
+<div class="totals">
+  <div><div class="tv">15</div><div class="tl">Total Tasks</div></div>
+  <div><div class="tv">3</div><div class="tl">Project Phases</div></div>
+  <div><div class="tv">14</div><div class="tl">Working Days</div></div>
+  <div><div class="tv">~48</div><div class="tl">Hours Estimated</div></div>
+</div>
+
+</div><!-- content -->
+</div><!-- layout -->
+</div><!-- tasks section -->
+
+<script>
+const TOTAL = 15;
+let done = new Set(JSON.parse(localStorage.getItem('covid_done')||'[]'));
+
+function buildSB() {
+  const tasks = document.querySelectorAll('.task');
+  const sb = document.getElementById('sb-links');
+  if (!sb) return;
+  sb.innerHTML = '';
+  tasks.forEach(t => {
+    const id = t.id;
+    const num = t.querySelector('.tn').textContent.split('·')[0].trim();
+    const title = t.querySelector('.tt').textContent;
+    const el = document.createElement('div');
+    el.className = 'sb-i';
+    el.innerHTML = `<span class="sb-n">${num.replace('TASK','')}</span><span class="sb-t2">${title}</span><div class="sb-c ${done.has(id)?'done':''}"></div>`;
+    el.onclick = () => document.getElementById(id).scrollIntoView({behavior:'smooth'});
+    sb.appendChild(el);
+  });
+}
+
+function tog(id) { document.getElementById('b-'+id).classList.toggle('open'); }
+
+function tDone(id) {
+  const t = document.getElementById(id);
+  done.has(id) ? done.delete(id) : done.add(id);
+  t.classList.toggle('done', done.has(id));
+  localStorage.setItem('covid_done', JSON.stringify([...done]));
+  updateProg(); buildSB();
+}
+
+function updateProg() {
+  const n = done.size;
+  document.getElementById('pf').style.width = (n/TOTAL*100)+'%';
+  document.getElementById('pt').textContent = `${n} / ${TOTAL} tasks`;
+}
+
+function show(id, el) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('on'));
+  document.querySelectorAll('.tnb').forEach(b => b.classList.remove('on'));
+  document.getElementById(id).classList.add('on');
+  el.classList.add('on');
+  if (id==='tasks') setTimeout(buildSB, 50);
+}
+
+done.forEach(id => { const t = document.getElementById(id); if(t) t.classList.add('done'); });
+updateProg();
+document.getElementById('b-t1').classList.add('open');
+</script>
+</body>
+</html>
